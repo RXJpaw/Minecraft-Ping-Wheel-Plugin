@@ -1,0 +1,5 @@
+name: Ping-Wheel-Plugin
+version: '${version}'
+main: pw.rxj.bukkit.pingwheel.Main
+api-version: '1.18'
+load: STARTUP
