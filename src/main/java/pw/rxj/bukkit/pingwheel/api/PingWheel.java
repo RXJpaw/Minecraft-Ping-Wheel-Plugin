@@ -35,6 +35,9 @@ public class PingWheel implements Listener {
     public void onPingLocation(Player player, ReceivePing ping, Plugin plugin) {
         String channel = ping.channel();
 
+        FriendlyByteBuf pingPacket = ping.originalPacket();
+        pingPacket.writeUUID(player.getUniqueId());
+
         if(!channel.equals(playerChannels.getOrDefault(player.getUniqueId(), ""))) {
             updatePlayerChannel(player, channel);
         }
@@ -42,10 +45,7 @@ public class PingWheel implements Listener {
         for (Player worldPlayer : player.getWorld().getPlayers()) {
             if(!channel.equals(playerChannels.getOrDefault(worldPlayer.getUniqueId(), ""))) continue;
 
-            FriendlyByteBuf originalPacket = ping.originalPacket();
-            originalPacket.writeUUID(player.getUniqueId());
-
-            player.sendPluginMessage(plugin, FORWARD_PING_LOCATION, originalPacket.toByteArray());
+            worldPlayer.sendPluginMessage(plugin, FORWARD_PING_LOCATION, pingPacket.toByteArray());
         }
     }
 
