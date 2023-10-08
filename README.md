@@ -1,6 +1,6 @@
 <p align="center" style="text-align: center">
   <a href="https://github.com/RXJpaw/Minecraft-Ping-Wheel-Plugin/">
-    <img src="./src/main/resources/icon.png" alt="Logo" width="128" height="128">
+    <img src="./assets/icon.png" alt="Logo" width="128" height="128">
   </a>
 </p>
 
