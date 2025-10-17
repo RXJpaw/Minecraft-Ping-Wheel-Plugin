@@ -9,8 +9,8 @@
 
 <div align="center">
 
-<a href="https://getbukkit.org/">![Get Bukkit](https://img.shields.io/badge/Bukkit-1.18%2C%201.19%2C%201.20-00a2e8)</a>
-<a href="https://github.com/LukenSkyne/Minecraft-Ping-Wheel">![Ping Wheel](https://img.shields.io/badge/Ping%20Wheel-%3E1.4.0-03c574)</a>
+<a href="https://getbukkit.org/">![Get Bukkit](https://img.shields.io/badge/Bukkit-%E2%89%A51.18-00a2e8)</a>
+<a href="https://github.com/LukenSkyne/Minecraft-Ping-Wheel">![Ping Wheel](https://img.shields.io/badge/Ping%20Wheel-%E2%89%A51.4.0-03c574)</a>
 <a href="https://github.com/RXJpaw/Minecraft-Ping-Wheel-Plugin/blob/master/LICENSE.md">![Apache License 2.0](https://img.shields.io/github/license/RXJpaw/Minecraft-Ping-Wheel-Plugin)</a>
 <a href="https://github.com/RXJpaw/Minecraft-Ping-Wheel-Plugin/issues">![Open Issues](https://img.shields.io/github/issues-raw/RXJpaw/Minecraft-Ping-Wheel-Plugin)</a>
 
