@@ -10,12 +10,15 @@ import pw.rxj.bukkit.pingwheel.api.FriendlyByteBuf;
 import pw.rxj.bukkit.pingwheel.api.PingWheel;
 import pw.rxj.bukkit.pingwheel.packets.ChannelUpdate;
 import pw.rxj.bukkit.pingwheel.packets.ReceivePing;
+import pw.rxj.bukkit.pingwheel.util.PrefixedLogger;
 
 import java.util.logging.Logger;
 
 public final class Main extends JavaPlugin {
     public static final String MOD_ID = "pingwheel-plugin";
     public static final Logger LOGGER = Logger.getLogger("Ping Wheel-Plugin");
+    public static final String PLUGIN_ID = "pingwheel-plugin";
+    public static final PrefixedLogger LOGGER = new PrefixedLogger(PLUGIN_ID);
 
     public final PluginManager pluginManager = getServer().getPluginManager();
     public final Messenger messenger = getServer().getMessenger();
