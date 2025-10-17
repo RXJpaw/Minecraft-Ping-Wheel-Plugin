@@ -1,6 +1,7 @@
 package pw.rxj.bukkit.pingwheel.api;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.handler.codec.EncoderException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -35,15 +36,51 @@ public class FriendlyByteBuf {
 
         return string;
     }
+    public void writeString(String string) {
+        this.writeString(string, Short.MAX_VALUE);
+    }
+    public void writeString(String string, int maxLength) {
+        if (string.length() > maxLength) {
+            throw new EncoderException("String too big (was " + string.length() + " characters, max " + maxLength + ")");
+        } else {
+            byte[] stringBytes = string.getBytes(StandardCharsets.UTF_8);
+            int encodedStringLength = maxLength * 3;
+            if (stringBytes.length > encodedStringLength) {
+                throw new EncoderException("String too big (was " + stringBytes.length + " bytes encoded, max " + encodedStringLength + ")");
+            } else {
+                this.writeVarInt(stringBytes.length);
+                byteBuf.writeBytes(stringBytes);
+            }
+        }
+    }
 
     public int readInt() {
         return byteBuf.readInt();
     }
+    public void writeInt(int value) {
+        byteBuf.writeInt(value);
+    }
+    public void writeVarInt(int value) {
+        while((value & -128) != 0) {
+            byteBuf.writeByte(value & 127 | 128);
+            value >>>= 7;
+        }
+
+        byteBuf.writeByte(value);
+    }
+
     public double readDouble() {
         return byteBuf.readDouble();
     }
+    public void writeDouble(double value) {
+        byteBuf.writeDouble(value);
+    }
+
     public boolean readBoolean() {
         return byteBuf.readBoolean();
+    }
+    public void writeBoolean(boolean value) {
+        byteBuf.writeBoolean(value);
     }
 
     public UUID readUUID() {
