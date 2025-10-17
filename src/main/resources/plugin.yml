@@ -2,4 +2,10 @@ name: Ping-Wheel-Plugin
 version: '${version}'
 main: pw.rxj.bukkit.pingwheel.Main
 api-version: '1.18'
-load: STARTUP
+load: POSTWORLD
+
+commands:
+  pw_config:
+    description: Apply changes to Ping Wheel's server config.
+    usage: /<command> help
+    permission: pingwheel.config.edit

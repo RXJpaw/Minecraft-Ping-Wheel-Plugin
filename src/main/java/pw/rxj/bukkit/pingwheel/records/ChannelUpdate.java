@@ -1,4 +1,4 @@
-package pw.rxj.bukkit.pingwheel.packets;
+package pw.rxj.bukkit.pingwheel.records;
 
 import pw.rxj.bukkit.pingwheel.api.FriendlyByteBuf;
 import pw.rxj.bukkit.pingwheel.api.PingWheel;

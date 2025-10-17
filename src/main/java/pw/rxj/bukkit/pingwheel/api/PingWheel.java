@@ -1,19 +1,23 @@
 package pw.rxj.bukkit.pingwheel.api;
 
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scoreboard.Team;
 import pw.rxj.bukkit.pingwheel.Main;
-import pw.rxj.bukkit.pingwheel.packets.ChannelUpdate;
-import pw.rxj.bukkit.pingwheel.packets.ReceivePing;
+import pw.rxj.bukkit.pingwheel.config.Config;
+import pw.rxj.bukkit.pingwheel.records.ChannelUpdate;
+import pw.rxj.bukkit.pingwheel.util.ZUtil;
 
 import java.util.HashMap;
 import java.util.UUID;
 
 public class PingWheel implements Listener {
     private static final HashMap<UUID, String> playerChannels = new HashMap<>();
+    private static final HashMap<UUID, RateLimiter> playerRateLimits = new HashMap<>();
 
     public static final String UPDATE_CHANNEL = "ping-wheel-c2s:update-channel";
     public static final String RECEIVE_PING_LOCATION = "ping-wheel-c2s:ping-location";
@@ -33,19 +37,44 @@ public class PingWheel implements Listener {
     }
 
     public void onPingLocation(Player player, ReceivePing ping, Plugin plugin) {
-        String channel = ping.channel();
+        UUID playerUUID = player.getUniqueId();
 
-        FriendlyByteBuf pingPacket = ping.originalPacket();
-        pingPacket.writeUUID(player.getUniqueId());
+        RateLimiter rateLimiter = playerRateLimits.get(playerUUID);
 
-        if(!channel.equals(playerChannels.getOrDefault(player.getUniqueId(), ""))) {
+        if(rateLimiter == null) {
+            playerRateLimits.put(playerUUID, new RateLimiter());
+        } else if(Main.CONFIG.getRateLimit() > 0 && rateLimiter.checkAndBlock()) {
+            return;
+        }
+
+        String channel = ping.getChannel();
+        Team playerTeam = ZUtil.getPlayerTeam(player);
+        Config.DefaultChannel defaultChannelMode = Main.CONFIG.getDefaultChannel();
+
+        if(channel.isEmpty()) {
+            if(defaultChannelMode == Config.DefaultChannel.DISABLED) {
+                player.sendMessage(ChatColor.DARK_GRAY + "[Ping-Wheel Plugin] " + ChatColor.YELLOW + "Must be in a channel to ping location. " + ChatColor.RESET + "Use " + ChatColor.GREEN + "/pingwheel channel " + ChatColor.RESET + "to switch.");
+                return;
+            } else if(defaultChannelMode == Config.DefaultChannel.TEAM_ONLY && playerTeam == null) {
+                player.sendMessage(ChatColor.DARK_GRAY + "[Ping-Wheel Plugin] " + ChatColor.YELLOW + "Must be in a team or channel to ping location. " + ChatColor.RESET + "Use " + ChatColor.GREEN + "/pingwheel channel " + ChatColor.RESET + "to switch.");
+                return;
+            }
+        }
+
+        if(!Main.CONFIG.isPlayerTrackingAllowed()) ping.stripPlayerEntity();
+        FriendlyByteBuf pingPacket = ping.asFriendlyByteBuf();
+        pingPacket.writeUUID(playerUUID);
+
+        if(!channel.equals(playerChannels.getOrDefault(playerUUID, ""))) {
             updatePlayerChannel(player, channel);
         }
 
-        for (Player worldPlayer : player.getWorld().getPlayers()) {
-            if(!channel.equals(playerChannels.getOrDefault(worldPlayer.getUniqueId(), ""))) continue;
+        for (Player p : player.getWorld().getPlayers()) {
+            if(!channel.equals(playerChannels.getOrDefault(p.getUniqueId(), ""))) continue;
 
-            worldPlayer.sendPluginMessage(plugin, FORWARD_PING_LOCATION, pingPacket.toByteArray());
+            if(defaultChannelMode != Config.DefaultChannel.GLOBAL && !ZUtil.teamEquals(playerTeam, ZUtil.getPlayerTeam(p))) continue;
+
+            p.sendPluginMessage(plugin, FORWARD_PING_LOCATION, pingPacket.toByteArray());
         }
     }
 
