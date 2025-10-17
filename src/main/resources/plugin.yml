@@ -1,4 +1,4 @@
-name: Ping-Wheel-Plugin
+name: pingwheel-plugin
 version: '${version}'
 main: pw.rxj.bukkit.pingwheel.Main
 api-version: '1.18'
